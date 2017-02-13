@@ -54,3 +54,4 @@ def get_activities(conversation, watermark=None):
                                 BASE_URL + (GET_ACTIVITIES % conversation['conversationId']),
                                 headers=headers, params=params)
     return json.loads(response.text)
+    
