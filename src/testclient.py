@@ -28,5 +28,10 @@ def main():
     print json.dumps(activities, indent=4)
     print "-" * 50
 
+    for activity in activities["activities"]:
+        if activity["from"]["id"] == "cat-lunch-bot":
+            print json.dumps(activity["text"])
+
+
 if __name__ == "__main__":
     main()
