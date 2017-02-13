@@ -5,7 +5,7 @@ A simple test module
 import json
 import time
 
-from py_directline3 import directline3 as dl3
+from directline3 import directline3 as dl3
 
 def main():
     """
