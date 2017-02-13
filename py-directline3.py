@@ -1,62 +1,70 @@
-import requests
 import json
 import time
+import requests
 
 SECRET = "Bearer hDcYliwT7Uw.cwA.EhQ.uHC2fujOPSF2hwwqSpcVjlfLmCqFeY5qhJd2bm3dJ9U"
-START_CONVERSATIONS_URL = "https://directline.botframework.com/v3/directline/conversations"
-ACTIVITIES_URL = "https://directline.botframework.com//v3/directline/conversations/%s/activities"
 
-
-#r = requests.Request('POST', url, headers)
-#prepared = r.prepare()
-#pretty_print_POST(prepared)
-
-#s = requests.Session()
-#response = s.send(prepared)
-
-#print response
-#print response.text
-
-def pretty_print_POST(req):
-    """
-    At this point it is completely built and ready
-    to be fired; it is "prepared".
-
-    However pay attention at the formatting used in 
-    this function because it is programmed to be pretty 
-    printed and may differ from the actual request.
-    """
-    print('{}\n{}\n{}\n\n{}'.format(
-        '-----------START-----------',
-        req.method + ' ' + req.url,
-        '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
-        req.body,
-    ))
+BASE_URL = "https://directline.botframework.com"
+START_CONVERSATION = "/v3/directline/conversations" #start a new conversation
+SEND_ACTIVITY = "/v3/directline/conversations/%s/activities"
+GET_ACTIVITIES = "/v3/directline/conversations/%s/activities"
 
 def start_conversation():
+    """
+    Starts a new conversation.
+    """
     headers = {
-        'Authorization': SECRET, 
+        'Authorization': SECRET,
         'Content-Type': 'application/json'
     }
-    r = requests.request('POST', START_CONVERSATIONS_URL, headers=headers)
-    return json.loads(r.text)
+    response = requests.request('POST', BASE_URL + START_CONVERSATION, headers=headers)
+    return json.loads(response.text)
 
+def send_activitiy(conversation, activity):
+    """
+    Send an activity.
+    """
+    headers = {
+        'Authorization': ("Bearer %s" % conversation["token"]),
+        'Content-Type': 'application/json'
+    }
+    response = requests.request('POST',
+                                BASE_URL + (SEND_ACTIVITY % conversation["conversationId"]),
+                                headers=headers,
+                                json=activity)
+    return json.loads(response.text)
 
-auth = start_conversation()
-print json.dumps(auth,indent=4)
-print "-" * 50
+def get_activities(conversation):
+    """
+    Get activities in this conversation.
+    """
+    headers = {
+        'Authorization': ("Bearer %s" % conversation["token"]),
+        'Content-Type': 'application/json'
+    }
+    response = requests.request('GET',
+                                BASE_URL + (GET_ACTIVITIES % conversation['conversationId']),
+                                headers=headers)
+    return json.loads(response.text)
 
-headers = {
-    'Authorization': ("Bearer %s" % auth["token"]),
-    'Content-Type': 'application/json'
-}
+def main():
+    """
+    the main function
+    """
+    conversation = start_conversation()
+    print json.dumps(conversation, indent=4)
+    print "-" * 50
 
-r = requests.request('POST', (ACTIVITIES_URL % auth["conversationId"]), headers=headers, json={"type":"message", "from": {"id":"user"}, "text":"all"})
-print json.loads(r.text)
-print "-" * 50
+    activity = {"type":"message", "from": {"id":"user"}, "text":"all"}
+    result = send_activitiy(conversation, activity)
+    print result
+    print "-" * 50
 
-time.sleep(10)
+    time.sleep(10)
 
-r = requests.request('GET', (ACTIVITIES_URL % auth['conversationId']), headers=headers)
-print json.dumps(json.loads(r.text), indent=4)
-print "-" * 50
+    activities = get_activities(conversation)
+    print json.dumps(activities, indent=4)
+    print "-" * 50
+
+if __name__ == "__main__":
+    main()
