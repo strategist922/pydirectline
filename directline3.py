@@ -1,5 +1,7 @@
 """
 A python client for talking to Direct Line API v3.0.
+
+https://docs.botframework.com/en-us/restapi/directline3/#/
 """
 
 import json
@@ -8,9 +10,9 @@ import requests
 AUTH_PATTERN = "Bearer %s"
 
 BASE_URL = "https://directline.botframework.com"
-START_CONVERSATION = "/v3/directline/conversations" #start a new conversation
-SEND_ACTIVITY = "/v3/directline/conversations/%s/activities"
-GET_ACTIVITIES = "/v3/directline/conversations/%s/activities"
+START_CONVERSATION = "/v3/directline/conversations" #Start a new conversation
+SEND_ACTIVITY = "/v3/directline/conversations/%s/activities" #Send an activity
+GET_ACTIVITIES = "/v3/directline/conversations/%s/activities" #Get activities in this conversation.
 
 def start_conversation(secret):
     """
